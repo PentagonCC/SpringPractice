@@ -26,11 +26,38 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (!user.getName().trim().isEmpty() && !user.getEmail().trim().isEmpty() && user.getAge() > 0) {
+        if (isCorrectUser(user)) {
             return userRepository.save(new User(user.getName(), user.getEmail(), user.getAge(),
                     LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
         }
         return new User();
     }
 
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
+
+    public User updateUser(Long id, User updatedUser) {
+        if (isCorrectUser(updatedUser)) {
+            Optional<User> foundUser = userRepository.findById(id);
+            if (foundUser.isPresent()) {
+                User user = foundUser.get();
+                user.setAge(updatedUser.getAge());
+                user.setEmail(updatedUser.getEmail());
+                user.setName(updatedUser.getName());
+                userRepository.save(user);
+                return user;
+            }
+        }
+        return new User();
+    }
+
+    private boolean isCorrectUser(User user) {
+        if (user != null) {
+            return user.getName() != null && user.getAge() > 0 && user.getEmail() != null
+                    && !user.getName().trim().isBlank() && !user.getEmail().trim().isBlank();
+
+        }
+        return false;
+    }
 }

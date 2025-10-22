@@ -68,6 +68,19 @@ public class User {
         this.createdAt = createdAt;
     }
 
+
+    public static boolean checkNumber(String str) {
+        if (str == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @Override
     public String toString() {
         return "Пользователь: " + '\n' +
