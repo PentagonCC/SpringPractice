@@ -1,6 +1,9 @@
 package org.example.SpringUserService.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,10 +15,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
     @Column(nullable = false)
     private String name;
+    @Email
+    @NotBlank
     @Column(nullable = false)
     private String email;
+    @Min(1)
     @Column(nullable = false)
     private int age;
     @Column(name = "created_at", nullable = false)
@@ -66,19 +73,6 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-
-    public static boolean checkNumber(String str) {
-        if (str == null) {
-            return false;
-        }
-        try {
-            Integer.parseInt(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
     }
 
     @Override

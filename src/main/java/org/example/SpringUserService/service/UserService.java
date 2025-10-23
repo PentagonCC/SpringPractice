@@ -19,9 +19,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User getUserById(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        return optionalUser.orElseGet(User::new);
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
 
     }
 
@@ -52,7 +51,7 @@ public class UserService {
         return new User();
     }
 
-    private boolean isCorrectUser(User user) {
+    public static boolean isCorrectUser(User user) {
         if (user != null) {
             return user.getName() != null && user.getAge() > 0 && user.getEmail() != null
                     && !user.getName().trim().isBlank() && !user.getEmail().trim().isBlank();
