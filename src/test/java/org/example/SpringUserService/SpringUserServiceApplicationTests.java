@@ -10,4 +10,9 @@ class SpringUserServiceApplicationTests {
 	void contextLoads() {
 	}
 
+    @Test
+    void main_startApplication() {
+        SpringUserServiceApplication.main(new String[] {});
+    }
+
 }
