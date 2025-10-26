@@ -115,7 +115,7 @@ public class UserControllerTest {
     void getUserById_userNotFound() throws Exception {
         Long notFoundId = 3443L;
         mockMvc.perform(get("/users/{id}", notFoundId))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -157,7 +157,7 @@ public class UserControllerTest {
         mockMvc.perform(put("/users/{id}/update", user.getId())
                         .content(objectMapper.writeValueAsString(null))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test

@@ -26,7 +26,7 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         Optional<User> foundUser = userService.getUserById(id);
         return foundUser.map(user -> ResponseEntity.ok().body(new UserDTO().convertToDTO(user))).orElseGet(
-                () -> ResponseEntity.badRequest().build());
+                () -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/users/create")
