@@ -1,8 +1,12 @@
 package org.example.user_service.service;
 
+import org.example.user_service.dto.Message;
+import org.example.user_service.dto.MessageStatus;
 import org.example.user_service.model.User;
+import org.example.user_service.producer.NotificationProducer;
 import org.example.user_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,10 +16,12 @@ import java.util.Optional;
 @Service
 public class UserService {
 
+    private final NotificationProducer notificationProducer;
     private final UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, NotificationProducer notificationProducer) {
+        this.notificationProducer = notificationProducer;
         this.userRepository = userRepository;
     }
 
@@ -26,14 +32,17 @@ public class UserService {
 
     public User createUser(User user) {
         if (isCorrectUser(user)) {
-            return userRepository.save(new User(user.getName(), user.getEmail(), user.getAge(),
-                    LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
+            User newUser = new User(user.getName(), user.getEmail(), user.getAge(),
+                    LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+            notificationProducer.sendNotification(new Message(newUser.getEmail(), MessageStatus.CREATED));
+            return userRepository.save(newUser);
         }
         return new User();
     }
 
     public void deleteUser(User user) {
         userRepository.delete(user);
+        notificationProducer.sendNotification(new Message(user.getEmail(), MessageStatus.DELETED));
     }
 
     public User updateUser(Long id, User updatedUser) {

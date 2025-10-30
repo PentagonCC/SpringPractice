@@ -1,10 +1,11 @@
-package org.example.notification_service.dto;
+package org.example.user_service.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class Message {
+
     @Email
     @NotBlank
     private String userEmail;
