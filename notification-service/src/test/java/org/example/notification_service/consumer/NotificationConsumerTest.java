@@ -59,9 +59,8 @@ public class NotificationConsumerTest {
     }
 
     @Test
-    void consumeNotification_incorrectJson() throws JsonProcessingException {
-        String incorrectJson = "json";
-        notificationConsumer.consumeNotification(incorrectJson);
+    void consumeNotification_incorrectJson() {
+        assertThrows(JsonProcessingException.class, () -> notificationConsumer.consumeNotification("invalid message"));
         verify(notificationSenderService, never()).sendEmailNotification(any(Message.class));
     }
 }
