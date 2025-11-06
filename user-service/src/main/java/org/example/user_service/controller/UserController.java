@@ -38,8 +38,6 @@ public class UserController {
             User user = foundUser.get();
             UserDTO userDTO = new UserDTO().convertToDTO(user);
             userDTO.add(linkTo(UserController.class).slash("swagger-ui/index.html#/").withSelfRel());
-            userDTO.add(linkTo(UserController.class).slash("users").slash(userDTO.getId()).slash("delete")
-                    .withSelfRel());
             response = ResponseEntity.ok().body(userDTO);
         }else {
             response = ResponseEntity.notFound().build();
@@ -59,10 +57,9 @@ public class UserController {
 
     @Operation(summary = "Удаление пользователя", description = "Позволяет удалить пользователя по его идентификатору")
     @DeleteMapping("/users/{id}/delete")
-    public ResponseEntity<?> deleteUser(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
+    public void deleteUser(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
         Optional<User> foundUser = userService.getUserById(id);
         foundUser.ifPresent(userService::deleteUser);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Обновление пользователя",
