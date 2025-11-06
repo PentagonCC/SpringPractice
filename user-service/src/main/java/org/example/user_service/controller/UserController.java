@@ -12,7 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Tag(name = "Контроллер управления пользователями", description = "Позволяет выполнять CRUD операции над пользователями")
 @Validated
@@ -30,22 +33,36 @@ public class UserController {
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
         Optional<User> foundUser = userService.getUserById(id);
-        return foundUser.map(user -> ResponseEntity.ok().body(new UserDTO().convertToDTO(user))).orElseGet(
-                () -> ResponseEntity.notFound().build());
+        ResponseEntity<UserDTO> response;
+        if(foundUser.isPresent()) {
+            User user = foundUser.get();
+            UserDTO userDTO = new UserDTO().convertToDTO(user);
+            userDTO.add(linkTo(UserController.class).slash("swagger-ui/index.html#/").withSelfRel());
+            userDTO.add(linkTo(UserController.class).slash("users").slash(userDTO.getId()).slash("delete")
+                    .withSelfRel());
+            response = ResponseEntity.ok().body(userDTO);
+        }else {
+            response = ResponseEntity.notFound().build();
+        }
+        return response;
     }
 
     @Operation(summary = "Создание пользователя")
     @PostMapping("/users/create")
     public ResponseEntity<UserDTO> createUser(@RequestBody @Valid User newUser) {
         User createdUser = userService.createUser(newUser);
-        return ResponseEntity.status(201).body(new UserDTO().convertToDTO(createdUser));
+        UserDTO userDTO = new UserDTO().convertToDTO(createdUser);
+        userDTO.add(linkTo(UserController.class).slash("users").slash(userDTO.getId()).withSelfRel());
+
+        return ResponseEntity.status(201).body(userDTO);
     }
 
     @Operation(summary = "Удаление пользователя", description = "Позволяет удалить пользователя по его идентификатору")
     @DeleteMapping("/users/{id}/delete")
-    public void deleteUser(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
         Optional<User> foundUser = userService.getUserById(id);
         foundUser.ifPresent(userService::deleteUser);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Обновление пользователя",
@@ -54,6 +71,8 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id,
                                               @RequestBody @Valid User updatedUser) {
         User user = userService.updateUser(id, updatedUser);
-        return ResponseEntity.ok().body(new UserDTO().convertToDTO(user));
+        UserDTO userDTO = new UserDTO().convertToDTO(user);
+        userDTO.add(linkTo(UserController.class).slash("users").slash(userDTO.getId()).withSelfRel());
+        return ResponseEntity.ok().body(userDTO);
     }
 }

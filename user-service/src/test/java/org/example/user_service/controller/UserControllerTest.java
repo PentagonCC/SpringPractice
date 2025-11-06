@@ -167,13 +167,13 @@ public class UserControllerTest {
         userRepository.save(user);
 
         mockMvc.perform(delete("/users/{id}/delete", user.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
     void deleteUser_notFoundUser() throws Exception {
         mockMvc.perform(delete("/users/{id}/delete", 3243))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
 
