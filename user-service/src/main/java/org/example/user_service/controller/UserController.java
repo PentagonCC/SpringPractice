@@ -1,5 +1,8 @@
 package org.example.user_service.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.example.user_service.dto.UserDTO;
 import org.example.user_service.model.User;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@Tag(name = "Контроллер управления пользователями", description = "Позволяет выполнять CRUD операции над пользователями")
 @Validated
 @RestController
 public class UserController {
@@ -22,27 +26,33 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Поиск пользователя по его идентификатору")
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
         Optional<User> foundUser = userService.getUserById(id);
         return foundUser.map(user -> ResponseEntity.ok().body(new UserDTO().convertToDTO(user))).orElseGet(
                 () -> ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Создание пользователя")
     @PostMapping("/users/create")
     public ResponseEntity<UserDTO> createUser(@RequestBody @Valid User newUser) {
         User createdUser = userService.createUser(newUser);
         return ResponseEntity.status(201).body(new UserDTO().convertToDTO(createdUser));
     }
 
+    @Operation(summary = "Удаление пользователя", description = "Позволяет удалить пользователя по его идентификатору")
     @DeleteMapping("/users/{id}/delete")
-    public void deleteUser(@PathVariable Long id) {
+    public void deleteUser(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
         Optional<User> foundUser = userService.getUserById(id);
         foundUser.ifPresent(userService::deleteUser);
     }
 
+    @Operation(summary = "Обновление пользователя",
+            description = "Позволяет обновить пользователя целиком по его идентификатору")
     @PutMapping("/users/{id}/update")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody @Valid User updatedUser) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id,
+                                              @RequestBody @Valid User updatedUser) {
         User user = userService.updateUser(id, updatedUser);
         return ResponseEntity.ok().body(new UserDTO().convertToDTO(user));
     }

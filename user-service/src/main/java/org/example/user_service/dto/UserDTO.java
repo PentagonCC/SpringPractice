@@ -1,12 +1,18 @@
 package org.example.user_service.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.example.user_service.model.User;
 
+@Schema(description = "Cущность пользователя, возвращаемая из методов контроллера")
 public class UserDTO {
 
+    @Schema(description = "Уникальный идентификатор")
     private Long id;
+    @Schema(description = "Имя пользователя")
     private String name;
+    @Schema(description = "Почта пользователя")
     private String email;
+    @Schema(description = "Возраст пользователя")
     private int age;
 
     public Long getId() {
