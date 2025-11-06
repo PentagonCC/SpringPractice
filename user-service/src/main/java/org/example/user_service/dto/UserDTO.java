@@ -2,9 +2,12 @@ package org.example.user_service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.example.user_service.model.User;
+import org.springframework.hateoas.RepresentationModel;
+
+import java.util.Objects;
 
 @Schema(description = "Cущность пользователя, возвращаемая из методов контроллера")
-public class UserDTO {
+public class UserDTO extends RepresentationModel<UserDTO> {
 
     @Schema(description = "Уникальный идентификатор")
     private Long id;
@@ -54,5 +57,18 @@ public class UserDTO {
         userDTO.setEmail(user.getEmail());
         userDTO.setAge(user.getAge());
         return userDTO;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        UserDTO userDTO = (UserDTO) o;
+        return age == userDTO.age && Objects.equals(id, userDTO.id) && Objects.equals(name, userDTO.name) && Objects.equals(email, userDTO.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, name, email, age);
     }
 }
