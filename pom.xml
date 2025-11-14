@@ -29,5 +29,6 @@
         <module>user-service</module>
         <module>notification-service</module>
         <module>gateway-service</module>
+        <module>eureka-discovery-service</module>
     </modules>
 </project>
