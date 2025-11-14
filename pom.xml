@@ -28,5 +28,6 @@
     <modules>
         <module>user-service</module>
         <module>notification-service</module>
+        <module>gateway-service</module>
     </modules>
 </project>
