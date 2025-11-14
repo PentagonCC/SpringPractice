@@ -10,15 +10,16 @@ spring:
           discovery:
             locator:
               enabled: true
+              lower-case-service-id: true
           routes:
-            - id: user-service
-              uri: lb://user-service
-              predicates:
-                - Path=/users/**
-            - id: notification-service
-              uri: lb://notification-service
-              predicates:
-                - Path=/notification/**
+          - id: user-service
+            uri: lb://user-service
+            predicates:
+              - Path=/users/**
+          - id: notification-service
+            uri: lb://notification-service
+            predicates:
+              - Path=/notification/**
 eureka:
   client:
     service-url:
