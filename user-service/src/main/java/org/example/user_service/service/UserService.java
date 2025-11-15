@@ -6,17 +6,14 @@ import org.example.user_service.model.User;
 import org.example.user_service.producer.NotificationProducer;
 import org.example.user_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
-
     private final NotificationProducer notificationProducer;
     private final UserRepository userRepository;
 
