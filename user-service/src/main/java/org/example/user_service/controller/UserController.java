@@ -33,12 +33,13 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserById(@PathVariable @Parameter(description = "Уникальный идентификатор") Long id) {
         Optional<User> foundUser = userService.getUserById(id);
         ResponseEntity<UserDTO> response;
-        if(foundUser.isPresent()) {
+        if (foundUser.isPresent()) {
             User user = foundUser.get();
             UserDTO userDTO = new UserDTO().convertToDTO(user);
+            userDTO.setStatus("Найден!!!");
             userDTO.add(linkTo(UserController.class).slash("swagger-ui/index.html#/").withSelfRel());
             response = ResponseEntity.ok().body(userDTO);
-        }else {
+        } else {
             response = ResponseEntity.notFound().build();
         }
         return response;
@@ -47,11 +48,10 @@ public class UserController {
     @Operation(summary = "Создание пользователя")
     @PostMapping("/users/create")
     public ResponseEntity<UserDTO> createUser(@RequestBody @Valid User newUser) {
-        User createdUser = userService.createUser(newUser);
-        UserDTO userDTO = new UserDTO().convertToDTO(createdUser);
-        userDTO.add(linkTo(UserController.class).slash("users").slash(userDTO.getId()).withSelfRel());
+        UserDTO createdUser = userService.createUser(newUser);
+        createdUser.add(linkTo(UserController.class).slash("users").slash(createdUser.getId()).withSelfRel());
 
-        return ResponseEntity.status(201).body(userDTO);
+        return ResponseEntity.status(201).body(createdUser);
     }
 
     @Operation(summary = "Удаление пользователя", description = "Позволяет удалить пользователя по его идентификатору")
@@ -68,6 +68,7 @@ public class UserController {
                                               @RequestBody @Valid User updatedUser) {
         User user = userService.updateUser(id, updatedUser);
         UserDTO userDTO = new UserDTO().convertToDTO(user);
+        userDTO.setStatus("Обновлен!!!");
         userDTO.add(linkTo(UserController.class).slash("users").slash(userDTO.getId()).withSelfRel());
         return ResponseEntity.ok().body(userDTO);
     }

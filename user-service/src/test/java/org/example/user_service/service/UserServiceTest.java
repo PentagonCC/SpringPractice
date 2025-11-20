@@ -1,5 +1,6 @@
 package org.example.user_service.service;
 
+import org.example.user_service.dto.UserDTO;
 import org.example.user_service.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,12 +75,12 @@ public class UserServiceTest {
 
     @Test
     void createUser_nullUser() {
-        assertEquals(new User(), userService.createUser(null));
+        assertEquals(new UserDTO(), userService.createUser(null));
     }
 
     @Test
     void createUser_incorrectUser() {
-        assertEquals(new User(), userService.createUser(new User("   ", "   ", 25,
+        assertEquals(new UserDTO(), userService.createUser(new User("   ", "   ", 25,
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))));
     }
 

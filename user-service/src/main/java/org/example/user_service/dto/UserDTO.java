@@ -17,6 +17,8 @@ public class UserDTO extends RepresentationModel<UserDTO> {
     private String email;
     @Schema(description = "Возраст пользователя")
     private int age;
+    @Schema(description = "Статус операции")
+    private String status;
 
     public Long getId() {
         return id;
@@ -50,6 +52,14 @@ public class UserDTO extends RepresentationModel<UserDTO> {
         this.age = age;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public UserDTO convertToDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
@@ -64,11 +74,12 @@ public class UserDTO extends RepresentationModel<UserDTO> {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         UserDTO userDTO = (UserDTO) o;
-        return age == userDTO.age && Objects.equals(id, userDTO.id) && Objects.equals(name, userDTO.name) && Objects.equals(email, userDTO.email);
+        return age == userDTO.age && Objects.equals(id, userDTO.id) && Objects.equals(name, userDTO.name) &&
+                Objects.equals(email, userDTO.email) && Objects.equals(status, userDTO.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, email, age);
+        return Objects.hash(super.hashCode(), id, name, email, age, status);
     }
 }
