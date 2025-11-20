@@ -1,6 +1,5 @@
 package org.example.user_service.producer;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.example.user_service.dto.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +22,11 @@ public class NotificationProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @CircuitBreaker(name = "serviceBreaker", fallbackMethod = "fallBackSendNotification")
     public void sendNotification(Message message) {
         try {
             kafkaTemplate.send("notifications", message).get(3, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void fallBackSendNotification(Message message, Throwable t) {
-        log.info("Не удалось отправить уведомление. Уведомление будет отправлено позже.");
     }
 }
