@@ -1,7 +1,9 @@
 package org.example.user_service.service;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.example.user_service.dto.Message;
 import org.example.user_service.dto.MessageStatus;
+import org.example.user_service.dto.UserDTO;
 import org.example.user_service.model.User;
 import org.example.user_service.producer.NotificationProducer;
 import org.example.user_service.repository.UserRepository;
@@ -28,14 +30,23 @@ public class UserService {
 
     }
 
-    public User createUser(User user) {
+    @CircuitBreaker(name = "serviceBreaker", fallbackMethod = "fallBackSendCreateNotification")
+    public UserDTO createUser(User user) {
         if (isCorrectUser(user)) {
-            User newUser = new User(user.getName(), user.getEmail(), user.getAge(),
-                    LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+            User newUser = userRepository.save(new User(user.getName(), user.getEmail(), user.getAge(),
+                    LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
+            UserDTO newUserDTO = new UserDTO().convertToDTO(newUser);
+            newUserDTO.setStatus("Пользователь успешно создан");
             notificationProducer.sendNotification(new Message(newUser.getEmail(), MessageStatus.CREATED));
-            return userRepository.save(newUser);
+            return newUserDTO;
         }
-        return new User();
+        return new UserDTO();
+    }
+
+    public UserDTO fallBackSendCreateNotification(User user, Throwable t) {
+        UserDTO newUserDTO = new UserDTO().convertToDTO(user);
+        newUserDTO.setStatus("Пользователь создан! К сожалению сервис отправки уведомлений не доступен, уведомление будет выслано позже");
+        return newUserDTO;
     }
 
     public void deleteUser(User user) {
